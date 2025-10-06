@@ -30,6 +30,78 @@ products.set('prod_1', {
   }
 });
 
+products.set('prod_2', {
+  id: 'prod_2',
+  name: 'Almond Butter Energy Bites - 12 Pack',
+  description: 'Protein-packed snack bites, gluten-free, made with organic almonds and dates',
+  price: { amount: 1499, currency: 'USD' },
+  availability: 'in_stock',
+  images: ['https://example.com/energy-bites.jpg'],
+  shipping_info: {
+    regions: ['US'],
+    estimated_days_min: 2,
+    estimated_days_max: 5
+  },
+  return_policy: {
+    days: 30,
+    conditions: 'Unopened items only'
+  }
+});
+
+products.set('prod_3', {
+  id: 'prod_3',
+  name: 'Himalayan Sea Salt Dark Chocolate - Gift Set',
+  description: '3-bar variety pack: 70%, 80%, and 90% cacao with pink Himalayan salt',
+  price: { amount: 2400, currency: 'USD' },
+  availability: 'in_stock',
+  images: ['https://example.com/chocolate-gift-set.jpg'],
+  shipping_info: {
+    regions: ['US'],
+    estimated_days_min: 2,
+    estimated_days_max: 5
+  },
+  return_policy: {
+    days: 30,
+    conditions: 'Unopened items only'
+  }
+});
+
+products.set('prod_4', {
+  id: 'prod_4',
+  name: 'Vegan Protein Bar Sampler - 6 Pack',
+  description: 'Plant-based protein bars: chocolate, peanut butter, and berry flavors',
+  price: { amount: 1899, currency: 'USD' },
+  availability: 'in_stock',
+  images: ['https://example.com/protein-bars.jpg'],
+  shipping_info: {
+    regions: ['US'],
+    estimated_days_min: 2,
+    estimated_days_max: 5
+  },
+  return_policy: {
+    days: 30,
+    conditions: 'Unopened items only'
+  }
+});
+
+products.set('prod_5', {
+  id: 'prod_5',
+  name: 'Sugar-Free Dark Chocolate Truffles - Box of 9',
+  description: 'Stevia-sweetened truffles, keto-friendly, 2g net carbs per truffle',
+  price: { amount: 1799, currency: 'USD' },
+  availability: 'in_stock',
+  images: ['https://example.com/truffles.jpg'],
+  shipping_info: {
+    regions: ['US'],
+    estimated_days_min: 2,
+    estimated_days_max: 5
+  },
+  return_policy: {
+    days: 30,
+    conditions: 'Unopened items only'
+  }
+});
+
 // ============================================
 // PRODUCT FEED ENDPOINT
 // ============================================
@@ -255,5 +327,5 @@ app.listen(PORT, () => {
   console.log(`ACP server running on port ${PORT}`);
   console.log(`Feed: http://localhost:${PORT}/commerce/feed`);
   console.log(`Health: http://localhost:${PORT}/health`);
-  console.log(`Test: http://localhost:${PORT}/test/create-payment-method`);
+  console.log(`Test: http://localhost:${PORT}/test/payment-tokens`);
 });
