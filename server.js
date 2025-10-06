@@ -234,22 +234,20 @@ app.get('/health', (req, res) => {
 });
 
 // ============================================
-// TEST ENDPOINT - Create test payment method
+// TEST ENDPOINT - Get test payment tokens
 // ============================================
-app.post('/test/create-payment-method', async (req, res) => {
-  try {
-    const paymentMethodId = await createTestPaymentMethod();
-    res.json({
-      success: true,
-      payment_method_id: paymentMethodId,
-      note: 'Use this as shared_payment_token for testing'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
+app.get('/test/payment-tokens', (req, res) => {
+  res.json({
+    success: true,
+    test_tokens: {
+      visa_success: 'pm_card_visa',
+      visa_decline: 'pm_card_chargeDeclined',
+      mastercard: 'pm_card_mastercard',
+      amex: 'pm_card_amex'
+    },
+    note: 'Use these test tokens as shared_payment_token. pm_card_visa will succeed.',
+    docs: 'https://stripe.com/docs/testing#cards'
+  });
 });
 
 const PORT = process.env.PORT || 3000;
