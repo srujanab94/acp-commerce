@@ -142,18 +142,31 @@ app.post('/commerce/checkout/complete', async (req, res) => {
     return res.status(400).json({ error: 'Checkout not ready for payment' });
   }
   
-  // TODO: Exchange shared_payment_token with Stripe
-  // const paymentIntent = await stripe.paymentIntents.create({
-  //   amount: checkout.total.amount,
-  //   currency: checkout.total.currency,
-  //   payment_method: shared_payment_token,
-  //   confirm: true,
-  //   metadata: { checkout_id: checkout.id }
-  // });
+  // Process payment with Stripe
+  const paymentResult = await processPayment(
+    shared_payment_token,
+    checkout.total.amount,
+    checkout.total.currency,
+    checkout_id
+  );
   
-  // For now, simulate successful payment
+  if (!paymentResult.success) {
+    checkout.status = 'payment_failed';
+    checkout.payment_error = paymentResult.error;
+    checkout.updated_at = new Date().toISOString();
+    checkouts.set(checkout_id, checkout);
+    
+    return res.status(402).json({
+      ...checkout,
+      payment_status: 'failed',
+      error: paymentResult.error.message
+    });
+  }
+  
+  // Payment succeeded
   checkout.status = 'completed';
-  checkout.payment_method = 'card_simulated';
+  checkout.payment_method = 'card';
+  checkout.payment_intent_id = paymentResult.payment_intent_id;
   checkout.completed_at = new Date().toISOString();
   checkout.updated_at = new Date().toISOString();
   
@@ -163,10 +176,14 @@ app.post('/commerce/checkout/complete', async (req, res) => {
   // TODO: Create fulfillment order
   // TODO: Update inventory
   
+  const orderId = `order_${crypto.randomBytes(8).toString('hex')}`;
+  
+  console.log(`✅ Order ${orderId} completed - Payment: ${paymentResult.payment_intent_id}`);
+  
   res.json({
     ...checkout,
-    payment_status: 'captured',
-    order_id: `order_${crypto.randomBytes(8).toString('hex')}`
+    payment_status: paymentResult.status,
+    order_id: orderId
   });
 });
 
@@ -211,8 +228,28 @@ app.get('/health', (req, res) => {
     status: 'ok',
     timestamp: new Date().toISOString(),
     checkouts_count: checkouts.size,
-    products_count: products.size
+    products_count: products.size,
+    stripe_configured: !!process.env.STRIPE_SECRET_KEY
   });
+});
+
+// ============================================
+// TEST ENDPOINT - Create test payment method
+// ============================================
+app.post('/test/create-payment-method', async (req, res) => {
+  try {
+    const paymentMethodId = await createTestPaymentMethod();
+    res.json({
+      success: true,
+      payment_method_id: paymentMethodId,
+      note: 'Use this as shared_payment_token for testing'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
@@ -220,4 +257,5 @@ app.listen(PORT, () => {
   console.log(`ACP server running on port ${PORT}`);
   console.log(`Feed: http://localhost:${PORT}/commerce/feed`);
   console.log(`Health: http://localhost:${PORT}/health`);
+  console.log(`Test: http://localhost:${PORT}/test/create-payment-method`);
 });
