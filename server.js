@@ -1,6 +1,8 @@
 // server.js
+require('dotenv').config();
 const express = require('express');
 const crypto = require('crypto');
+const { processPayment, createTestPaymentMethod } = require('./services/stripe');
 const app = express();
 
 app.use(express.json());
